@@ -1,6 +1,7 @@
 package http
 
 import (
+	httpHeaders "github.com/go-http-utils/headers"
 	"github.com/go-resty/resty/v2"
 	"github.com/google/go-querystring/query"
 	"github.com/hashicorp/go-multierror"
@@ -10,13 +11,19 @@ import (
 	"sync"
 )
 
-const HdrAccept = "Accept"
-const HdrContentType = "Content-Type"
-const HdrUserAgent = "User-Agent"
-
-const ContentTypeApplicationJson = "application/json"
-const ContentTypeApplicationXml = "application/xml"
-const ContentTypeApplicationFormUrlencoded = "application/x-www-form-urlencoded"
+const (
+	ContentTypeApplicationJson           = "application/json"
+	ContentTypeApplicationXml            = "application/xml"
+	ContentTypeApplicationFormUrlencoded = "application/x-www-form-urlencoded"
+	HeaderValueAcceptAll                 = "*/*"
+	HeaderValueAcceptApplicationJson     = ContentTypeApplicationJson
+	HeaderValueAcceptApplicationXml      = ContentTypeApplicationXml
+	HeaderValueAcceptTextCsv             = "text/csv"
+	HeaderValueAcceptTextPlain           = "text/plain"
+	HeaderValueAuthorizationTypeBasic    = "Basic"
+	HeaderValueAuthorizationTypeBearer   = "Bearer"
+	HeaderValueAuthorizationTypeDigest   = "Digest"
+)
 
 type Request struct {
 	errs         error
@@ -54,13 +61,13 @@ func NewRequest(client Client) *Request {
 // use NewJsonRequest to create a request that already contains the application/json content-type, don't create the object inline!
 func NewJsonRequest(client Client) *Request {
 	return NewRequest(client).
-		WithHeader(HdrAccept, ContentTypeApplicationJson)
+		WithHeader(httpHeaders.Accept, ContentTypeApplicationJson)
 }
 
 // use NewXmlRequest to create a request that already contains the application/xml content-type, don't create the object inline!
 func NewXmlRequest(client Client) *Request {
 	return NewRequest(client).
-		WithHeader(HdrAccept, ContentTypeApplicationXml)
+		WithHeader(httpHeaders.Accept, ContentTypeApplicationXml)
 }
 
 func (r *Request) WithUrl(rawUrl string) *Request {
