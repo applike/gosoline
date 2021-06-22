@@ -31,6 +31,13 @@ func interfaceToMapNode(val interface{}) *MapXNode {
 
 		return &MapXNode{value: slice}
 
+	case []interface{}:
+		for i, v := range val {
+			val[i] = interfaceToMapNode(v).value
+		}
+
+		return &MapXNode{value: val}
+
 	default:
 		return &MapXNode{value: val}
 	}

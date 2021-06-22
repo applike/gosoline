@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/applike/gosoline/pkg/cfg"
 	"github.com/applike/gosoline/pkg/clock"
-	"github.com/applike/gosoline/pkg/mon"
+	"github.com/applike/gosoline/pkg/log"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -16,7 +16,7 @@ type Environment struct {
 
 	t          *testing.T
 	config     cfg.GosoConf
-	logger     mon.GosoLog
+	logger     log.GosoLogger
 	filesystem *filesystem
 	runner     *containerRunner
 	components *ComponentsContainer
@@ -38,18 +38,17 @@ func NewEnvironment(t *testing.T, options ...Option) (*Environment, error) {
 		}
 	}
 
-	logger := mon.NewLogger()
-	for _, opt := range env.loggerOptions {
-		if err := opt(config, logger); err != nil {
-			return nil, fmt.Errorf("can apply logger option: %w", err)
-		}
+	var err error
+	var logger log.GosoLogger
+
+	if logger, err = NewConsoleLogger(env.loggerOptions...); err != nil {
+		return nil, fmt.Errorf("can apply logger option: %w", err)
 	}
 
-	if err := cfg.ApplyPostProcessors(config, logger); err != nil {
+	if err = cfg.ApplyPostProcessors(config, logger); err != nil {
 		return nil, fmt.Errorf("can not apply post processor on config: %w", err)
 	}
 
-	var err error
 	var skeletons []*componentSkeleton
 	var component Component
 	var components = NewComponentsContainer()
@@ -121,7 +120,7 @@ func (e *Environment) Config() cfg.GosoConf {
 	return e.config
 }
 
-func (e *Environment) Logger() mon.GosoLog {
+func (e *Environment) Logger() log.GosoLogger {
 	return e.logger
 }
 

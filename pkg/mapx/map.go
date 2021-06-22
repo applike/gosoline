@@ -88,12 +88,16 @@ func (m *MapX) Set(key string, value interface{}, options ...MapOption) {
 		opt(mode)
 	}
 
-	switch msier := value.(type) {
+	switch t := value.(type) {
 	case Msier:
-		msi := msier.Msi()
+		msi := t.Msi()
 		value = msiToMsn(msi)
 	case map[string]interface{}:
-		value = msiToMsn(msier)
+		value = msiToMsn(t)
+	case []interface{}:
+		for i, val := range t {
+			t[i] = interfaceToMapNode(val).value
+		}
 	}
 
 	m.access(m.msn, key, value, mode)
@@ -274,6 +278,10 @@ func (m *MapX) Merge(key string, source interface{}, options ...MapOption) {
 	var elementValue interface{}
 
 	if sourceValue.Kind() == reflect.Map {
+		if key == "." && sourceValue.Len() == 0 {
+			return
+		}
+
 		if !m.Has(key) && sourceValue.Len() == 0 {
 			m.Set(key, map[string]interface{}{}, options...)
 			return
