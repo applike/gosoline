@@ -270,6 +270,20 @@ func WithLoggerTagsFromConfig(app *App) {
 	})
 }
 
+func WithLoggerVersionTag(version string) Option {
+	return func(app *App) {
+		if len(version) == 0 {
+			return
+		}
+
+		app.addLoggerOption(func(config cfg.GosoConf, logger mon.GosoLog) error {
+			return logger.Option(mon.WithTags(map[string]interface{}{
+				"version": version,
+			}))
+		})
+	}
+}
+
 func WithMetricDaemon(app *App) {
 	app.addKernelOption(func(config cfg.GosoConf, kernel kernelPkg.GosoKernel) error {
 		kernel.Add("metric", func(ctx context.Context, config cfg.Config, logger mon.Logger) (kernelPkg.Module, error) {
@@ -311,6 +325,21 @@ func WithUTCClock(useUTC bool) Option {
 	return func(app *App) {
 		app.addSetupOption(func(config cfg.GosoConf, logger mon.GosoLog) error {
 			clock.WithUseUTC(useUTC)
+
+			return nil
+		})
+	}
+}
+
+func WithVersion(version string) Option {
+	return func(app *App) {
+		app.addSetupOption(func(config cfg.GosoConf, logger mon.GosoLog) error {
+			if len(version) == 0 {
+				return nil
+			}
+
+			appName := config.GetString("app_name", "app")
+			logger.Infof("%s version %s", appName, version)
 
 			return nil
 		})
