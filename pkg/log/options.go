@@ -4,9 +4,7 @@ type Option func(logger *gosoLogger) error
 
 func WithContextFieldsResolver(resolvers ...ContextFieldsResolver) Option {
 	return func(logger *gosoLogger) error {
-		for _, resolver := range resolvers {
-			logger.ctxResolvers = append(logger.ctxResolvers, resolver)
-		}
+		logger.ctxResolvers = append(logger.ctxResolvers, resolvers...)
 
 		return nil
 	}
