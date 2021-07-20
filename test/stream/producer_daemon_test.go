@@ -47,16 +47,16 @@ type LoggingHandler struct {
 }
 
 func (l LoggingHandler) Channels() []string {
-	panic("implement me")
+	return []string{}
 }
 
 func (l LoggingHandler) Level() int {
-	panic("implement me")
+	return log.PriorityDebug
 }
 
 func (l LoggingHandler) Log(_ time.Time, level int, msg string, _ []interface{}, err error, data log.Data) error {
 	assert.NoError(l.t, err)
-	assert.Contains(l.t, []string{"debug", "info", "warn"}, level, "Unexpected log message: [%s] %s %v %v", level, msg, err, data)
+	assert.Contains(l.t, []int{log.PriorityDebug, log.PriorityInfo, log.PriorityWarn}, level, "Unexpected log message: [%s] %s %v %v", level, msg, err, data)
 	return nil
 }
 
