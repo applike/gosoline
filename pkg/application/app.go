@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/applike/gosoline/pkg/cfg"
 	"github.com/applike/gosoline/pkg/kernel"
-	"github.com/applike/gosoline/pkg/mon"
+	"github.com/applike/gosoline/pkg/log"
 )
 
 type App struct {
@@ -42,14 +42,12 @@ func Default(options ...Option) kernel.Kernel {
 		WithConfigServer,
 		WithConsumerMessagesPerRunnerMetrics,
 		WithKernelSettingsFromConfig,
-		WithLoggerFormat(mon.FormatGelfFields),
 		WithLoggerApplicationTag,
-		WithLoggerTagsFromConfig,
-		WithLoggerSettingsFromConfig,
+		WithLoggerHandlersFromConfig,
 		WithLoggerContextFieldsMessageEncoder(),
-		WithLoggerContextFieldsResolver(mon.ContextLoggerFieldsResolver),
-		WithLoggerMetricHook,
-		WithLoggerSentryHook(mon.SentryExtraConfigProvider, mon.SentryExtraEcsMetadataProvider),
+		WithLoggerContextFieldsResolver(log.ContextLoggerFieldsResolver),
+		WithLoggerMetricHandler,
+		WithLoggerSentryHandler(log.SentryExtraConfigProvider, log.SentryExtraEcsMetadataProvider),
 		WithMetricDaemon,
 		WithProducerDaemon,
 		WithTracing,
@@ -64,7 +62,7 @@ func Default(options ...Option) kernel.Kernel {
 func New(options ...Option) kernel.Kernel {
 	var err error
 	var config = cfg.New()
-	var logger = mon.NewLogger()
+	var logger = log.NewLogger()
 	var ker kernel.Kernel
 
 	if ker, err = NewWithInterfaces(config, logger, options...); err != nil {
@@ -74,7 +72,7 @@ func New(options ...Option) kernel.Kernel {
 	return ker
 }
 
-func NewWithInterfaces(config cfg.GosoConf, logger mon.GosoLog, options ...Option) (kernel.Kernel, error) {
+func NewWithInterfaces(config cfg.GosoConf, logger log.GosoLogger, options ...Option) (kernel.Kernel, error) {
 	var err error
 	var ker kernel.GosoKernel
 
