@@ -205,12 +205,14 @@ func (l *gosoLogger) shouldLogToChannels(current string, channels []string) bool
 			return true
 		}
 
-		if strings.HasPrefix(channel, "!") {
-			channel = strings.TrimPrefix(channel, "!")
+		if !strings.HasPrefix(channel, "!") {
+			continue
+		}
 
-			if channel == current {
-				return false
-			}
+		channel = strings.TrimPrefix(channel, "!")
+
+		if channel == current {
+			return false
 		}
 	}
 

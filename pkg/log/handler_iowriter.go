@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+func init() {
+	AddHandlerFactory("iowriter", handlerIoWriterFactory)
+}
+
 type HandlerIoWriterSettings struct {
 	Level           string   `cfg:"level" default:"info"`
 	Channels        []string `cfg:"channels"`
@@ -16,9 +20,9 @@ type HandlerIoWriterSettings struct {
 }
 
 func handlerIoWriterFactory(config cfg.Config, handlerIndex int) (Handler, error) {
-	key := fmt.Sprintf("log.handlers[%d]", handlerIndex)
+	handlerConfigKey := fmt.Sprintf("log.handlers[%d]", handlerIndex)
 	settings := &HandlerIoWriterSettings{}
-	config.UnmarshalKey(key, settings, cfg.UnmarshalWithDefaultsFromKey("log.level", "level"))
+	config.UnmarshalKey(handlerConfigKey, settings, cfg.UnmarshalWithDefaultsFromKey("log.level", "level"))
 
 	var ok bool
 	var err error
@@ -30,7 +34,7 @@ func handlerIoWriterFactory(config cfg.Config, handlerIndex int) (Handler, error
 		return nil, fmt.Errorf("io writer of type %s not available", settings.Writer)
 	}
 
-	if writer, err = writerFactory(config, handlerIndex); err != nil {
+	if writer, err = writerFactory(config, handlerConfigKey); err != nil {
 		return nil, fmt.Errorf("can not create io writer of type %s: %w", settings.Writer, err)
 	}
 

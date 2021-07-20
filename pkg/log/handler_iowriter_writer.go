@@ -6,13 +6,13 @@ import (
 	"os"
 )
 
-type IoWriterWriterFactory func(config cfg.Config, handlerIndex int) (io.Writer, error)
+type IoWriterWriterFactory func(config cfg.Config, configKey string) (io.Writer, error)
 
 var ioWriterFactories = map[string]IoWriterWriterFactory{
 	"file":   ioWriterFileFactory,
 	"stdout": ioWriterStdOutFactory,
 }
 
-func ioWriterStdOutFactory(_ cfg.Config, _ int) (io.Writer, error) {
+func ioWriterStdOutFactory(_ cfg.Config, _ string) (io.Writer, error) {
 	return os.Stdout, nil
 }

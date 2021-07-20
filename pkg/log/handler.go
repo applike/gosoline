@@ -14,9 +14,7 @@ type Handler interface {
 
 type HandlerFactory func(config cfg.Config, handlerIndex int) (Handler, error)
 
-var handlerFactories = map[string]HandlerFactory{
-	"iowriter": handlerIoWriterFactory,
-}
+var handlerFactories = map[string]HandlerFactory{}
 
 func AddHandlerFactory(name string, factory HandlerFactory) {
 	handlerFactories[name] = factory
@@ -37,7 +35,7 @@ func NewHandlersFromConfig(config cfg.Config) ([]Handler, error) {
 		}
 
 		if handlers[i], err = handlerFactory(config, i); err != nil {
-			return nil, fmt.Errorf("can not create logging handler of type %s on index %d", handlerSettings.Type, i)
+			return nil, fmt.Errorf("can not create logging handler of type %s on index %d: %w", handlerSettings.Type, i, err)
 		}
 	}
 

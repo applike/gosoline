@@ -6,16 +6,16 @@ import (
 	"time"
 )
 
+func init() {
+	AddHandlerFactory("sentry", handlerSentryFactory)
+}
+
 //go:generate mockery -name Sentry
 type Sentry interface {
 	CaptureException(exception error, hint *sentry.EventHint, scope sentry.EventModifier) *sentry.EventID
 }
 
-func init() {
-	AddHandlerFactory("metric", LoggerHandlerFactory)
-}
-
-func LoggerHandlerFactory(config cfg.Config, _ int) (Handler, error) {
+func handlerSentryFactory(config cfg.Config, _ int) (Handler, error) {
 	return NewHandlerSentry(config), nil
 }
 

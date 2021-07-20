@@ -131,6 +131,33 @@ func (s *MapTestSuite) TestSetSliceOfMaps() {
 	s.True(isMap)
 }
 
+func (s *MapTestSuite) TestSetSliceOfMapsDoesntModify() {
+	mapsList := []interface{}{
+		map[string]interface{}{
+			"true":  true,
+			"false": false,
+		},
+	}
+
+	m := mapx.NewMapX()
+	m.Set("maps", mapsList)
+
+	s.Equal([]interface{}{
+		map[string]interface{}{
+			"true":  true,
+			"false": false,
+		},
+	}, mapsList, "the argument shouldn't be modified")
+	s.Equal(m.Msi(), map[string]interface{}{
+		"maps": []interface{}{
+			map[string]interface{}{
+				"true":  true,
+				"false": false,
+			},
+		},
+	})
+}
+
 func (s *MapTestSuite) TestSkipExisting() {
 	s.m.Set("a", 1)
 	s.m.Set("a", 2, mapx.SkipExisting)

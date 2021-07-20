@@ -11,10 +11,9 @@ type ioWriterFileSettings struct {
 	Path string `cfg:"path" default:"logs.log"`
 }
 
-func ioWriterFileFactory(config cfg.Config, handlerIndex int) (io.Writer, error) {
-	key := fmt.Sprintf("log.handlers[%d]", handlerIndex)
+func ioWriterFileFactory(config cfg.Config, configKey string) (io.Writer, error) {
 	settings := &ioWriterFileSettings{}
-	config.UnmarshalKey(key, settings)
+	config.UnmarshalKey(configKey, settings)
 
 	return NewIoWriterFile(settings.Path)
 }

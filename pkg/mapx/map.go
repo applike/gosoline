@@ -88,19 +88,30 @@ func (m *MapX) Set(key string, value interface{}, options ...MapOption) {
 		opt(mode)
 	}
 
+	value = m.prepareInput(value)
+	m.access(m.msn, key, value, mode)
+}
+
+func (m *MapX) prepareInput(value interface{}) interface{} {
 	switch t := value.(type) {
 	case Msier:
 		msi := t.Msi()
 		value = msiToMsn(msi)
+
 	case map[string]interface{}:
 		value = msiToMsn(t)
+
 	case []interface{}:
+		cpy := make([]interface{}, len(t))
+
 		for i, val := range t {
-			t[i] = interfaceToMapNode(val).value
+			cpy[i] = interfaceToMapNode(val).value
 		}
+
+		value = cpy
 	}
 
-	m.access(m.msn, key, value, mode)
+	return value
 }
 
 // access accesses the object using the selector and performs the

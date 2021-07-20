@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/applike/gosoline/pkg/encoding/json"
 	"github.com/fatih/color"
+	"sort"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ func FormatterConsole(timestamp string, level int, format string, args []interfa
 	fieldString := getFieldsAsString(data.Fields)
 	contextString := getFieldsAsString(data.ContextFields)
 
-	levelStr := fmt.Sprintf("%-7v", LevelName(level))
+	levelStr := fmt.Sprintf("%-7s", LevelName(level))
 	channel := fmt.Sprintf("%-7s", data.Channel)
 	msg := fmt.Sprintf(format, args...)
 
@@ -66,10 +67,17 @@ func FormatterJson(timestamp string, level int, format string, args []interface{
 }
 
 func getFieldsAsString(fields map[string]interface{}) string {
+	keys := make([]string, 0, len(fields))
 	fieldParts := make([]string, 0, len(fields))
 
-	for k, v := range fields {
-		fieldParts = append(fieldParts, fmt.Sprintf("%v: %v", k, v))
+	for k := range fields {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		fieldParts = append(fieldParts, fmt.Sprintf("%v: %v", k, fields[k]))
 	}
 
 	return strings.Join(fieldParts, ", ")

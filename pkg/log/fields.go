@@ -28,8 +28,8 @@ func prepareForLog(v interface{}) interface{} {
 	case time.Time:
 		return v
 	case map[string]interface{}:
-		// perform a deep copy of any maps contained in this map element
-		// to ensure we own the object completely
+		// perform a deep copy of any maps contained in this map element to ensure we own the object completely
+		// also makes sure, that all nested values get prepared to be written as well
 		return mergeFields(t, nil)
 
 	default:
